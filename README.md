@@ -17,6 +17,7 @@ Feel free to send suggestions and corrections.
 - [Fragmented MP4 (fMP4)](#fragmented-mp4-fmp4)
 - [Movie Data & Codecs](#movie-data--codecs)
 - [References and Resources](#references-and-resources)
+- [Tools](#tools)
 - [License](#license)
 
 
@@ -31,18 +32,40 @@ The ISOBMFF format is directly based on the [QuickTime](https://en.wikipedia.org
 # Movie Atoms
 
 ## Atom Header Format
+The MP4 byte structure is composed of a series of boxes, also known as "atoms". Each box describes and contains data to build the MP4 container format.
 
-![Box Header](images/box-header.png)
+The first 8 bytes of each box is known as the "Box Header", where the first 4 bytes are the size of the box, and the next 4 bytes are the box name. These are the two values you need to know to iterate and parse each box, byte by byte.
 
-```
-aligned(8) class Box (unsigned int(32) boxtype,
-    optional unsigned int(8)[16] extended_type) {
-    unsigned int(32) size;
-    unsigned int(32) type = boxtype;
+For example, this is an example of a Box Header:
+
+```go
+type Box struct {
+  Name    string
+  Size    int32
 }
 ```
+![Box Header](images/box-header.png)
+
+The box `Name` being the box type, also known as the `FourCC` code.
+
+The box `Size` being the size (in bytes) of the box, including the box header.
+
 
 ## Reading the Atom Data
+Reading the box data from each atom requires the box size, name and byte structure of each box you are parsing. You can refer to the MPEG-4 Part 14 specification for the byte structure of each known box, or just refer to some existing MP4 parsing open-source code.
+
+For example, reading the Filetype Box (`ftyp`):
+
+```go
+type FtypBox struct {
+  *Box
+  MajorBrand       string   // Brand identifer.
+  MinorVersion     uint32   // Informative integer for the minor version of the major brand.
+  CompatibleBrands []string // A list, to the end of the box, of brands.
+}
+```
+![Filetype Box](images/ftyp.png)
+
 
 ## Basic Types
 
@@ -55,5 +78,9 @@ aligned(8) class Box (unsigned int(32) boxtype,
 # References and Resources
 * https://developer.apple.com/library/archive/documentation/QuickTime/QTFF
 * https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format
+
+# Tools
+* https://hexed.it
+* https://www.diagrams.net/
 
 # License
