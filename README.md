@@ -4,6 +4,7 @@ just the MP4 container format. This guide will go over the components and byte s
 
 Feel free to send suggestions and corrections.
 
+⚠️ *Currently a work-in-progress document. Check back for updates!*
 
 # Table of Contents
 - [Introduction](#introduction)
@@ -12,13 +13,11 @@ Feel free to send suggestions and corrections.
 - [Movie Atoms](#movie-atoms)
   - [Atom Header Format](#atom-header-format)
   - [Reading the Atom Data](#reading-the-atom-data)
-  - [Basic Types](#basic-types)
-- [Metadata](#metadata)
+  - [Examples](#examples)
 - [Fragmented MP4 (fMP4)](#fragmented-mp4-fmp4)
 - [Movie Data & Codecs](#movie-data--codecs)
 - [References and Resources](#references-and-resources)
 - [Tools](#tools)
-- [License](#license)
 
 
 # The MP4 Container Format
@@ -40,8 +39,8 @@ For example, this is an example of a Box Header:
 
 ```go
 type Box struct {
-  Name    string
   Size    int32
+  Name    string
 }
 ```
 ![Box Header](images/box-header.png)
@@ -66,21 +65,35 @@ type FtypBox struct {
 ```
 ![Filetype Box](images/ftyp.png)
 
+If you were to open this into a hex editor, it should look something like:
+![Filetype Box Hex](images/ftyp-hex.png)
 
-## Basic Types
+* Reading the first 4 bytes of the box header as an unsigned 32 bit integer (big endian) gives us the box size: `32 bytes`.
+* The next 4 bytes gives us: `0x66747970` in hexidecimal, or `ftyp` as a string.
+* Next 4 bytes gives us the Major Brand: `0x69736F6D` in hexidecimal, or `isom` as a string.
+* Next 4 bytes gives us the Minor Version: `512`
+* The next 16 bytes, read as `uint32be` (into a string) at a time gives us an array of compatible brands: `isom`, `iso2`, `avc1`, and `mp41`.
+* We have read a total of `32 bytes` as defined in the box header. We can now read the next box header!
 
-# Metadata
+## Examples
+Check out the following projects for more examples on parsing more boxes:
+* https://github.com/alfg/mp4 - MP4 reader in Go.
+* https://github.com/alfg/mp4rs - MP4 reader in Rust.
+
+*Web Assembly examples coming soon!*
 
 # Fragmented MP4 (fMP4)
+TBD
 
 # Movie Data & Codecs
+TBD
 
 # References and Resources
 * https://developer.apple.com/library/archive/documentation/QuickTime/QTFF
 * https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format
+* https://github.com/alfg/mp4
+* https://github.com/alfg/mp4rs
 
 # Tools
 * https://hexed.it
 * https://www.diagrams.net/
-
-# License
