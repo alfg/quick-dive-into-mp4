@@ -1,3 +1,5 @@
+<p align="center"><img src="header.png" /></p>
+
 # A Quick Dive Into MP4
 
 What is an MP4? We all know it as a file format for playing video with sound. It's used for streaming video by Netflix, YouTube, Instagram, and also for capturing video on your iPhone, but how does it work? How is it used? What is the byte structure? What is a container?
